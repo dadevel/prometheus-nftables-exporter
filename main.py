@@ -31,6 +31,16 @@ def main(args):
     namespace = 'nftables'
     labels = {'family', 'table', 'name', 'type'}
 
+    chains_gauge = DictGauge(
+        'chains',
+        'Number of chains in nftables ruleset',
+        namespace=namespace,
+    )
+    rules_gauge = DictGauge(
+        'rules',
+        'Number of rules in nftables ruleset',
+        namespace=namespace,
+    )
     counter_bytes_gauge = DictGauge(
         'counter_bytes',
         'Byte value of named nftables counters',
@@ -67,6 +77,8 @@ def main(args):
     prometheus_client.start_http_server(addr=address, port=port)
 
     while True:
+        rules_gauge.set(len(fetch_nftables('ruleset', 'rule')))
+        chains_gauge.set(len(fetch_nftables('ruleset', 'chain')))
         for item in fetch_nftables('counters', 'counter'):
             counter_bytes_gauge.labels(item).set(item.get('bytes', 0))
             counter_packets_gauge.labels(item).set(item.get('packets', 0))
