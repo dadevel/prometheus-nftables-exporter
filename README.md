@@ -1,4 +1,4 @@
-# Prometheus Nftables Exporter [![CI](https://github.com/dadevel/prometheus-nftables-exporter/workflows/CI/badge.svg?branch=master)](https://github.com/dadevel/prometheus-nftables-exporter/actions)
+# Prometheus Nftables Exporter [![CI](https://github.com/dadevel/prometheus-nftables-exporter/workflows/CI/badge.svg?branch=master)](https://github.com/dadevel/prometheus-nftables-exporter/actions) [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/dadevel/prometheus-nftables-exporter?color=blue&logo=docker)](https://hub.docker.com/r/dadevel/prometheus-nftables-exporter)
 
 A Prometheus Exporter that exposes metrics from [Nftables](https://nftables.org/projects/nftables/index.html).
 
