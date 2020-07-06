@@ -1,11 +1,9 @@
 FROM python:3-alpine
-# nftables in alpine 3.11 was built without json support
-RUN apk add --no-cache --repository http://nl.alpinelinux.org/alpine/edge/main nftables
+RUN apk add --no-cache setpriv nftables
 WORKDIR /app
-COPY ./main.py ./bin/prometheus-nftables-exporter
+COPY ./main.py ./bin/nftables-exporter
 COPY ./requirements.txt .
 RUN pip install -r ./requirements.txt && rm ./requirements.txt
-USER nobody:nogroup
 ENV PATH /app/bin:$PATH
-ENTRYPOINT ["prometheus-nftables-exporter"]
+ENTRYPOINT ["/usr/bin/setpriv", "--reuid", "65534", "--regid", "65534", "--clear-groups", "--no-new-privs", "--bounding-set", "-all,+net_admin", "--ambient-caps", "-all,+net_admin", "--inh-caps", "-all,+net_admin", "nftables-exporter"]
 
