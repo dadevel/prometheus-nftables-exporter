@@ -21,11 +21,11 @@ class DictGauge(prometheus_client.Gauge):
 
 def main():
     try:
-        address = str(os.environ.get('ADDRESS', ''))
-        port = int(os.environ.get('PORT', '9876'))
-        update_period = int(os.environ.get('UPDATE_PERIOD', '60'))
+        address = os.environ.get('NFTABLES_EXPORTER_ADDRESS', '')
+        port = int(os.environ.get('NFTABLES_EXPORTER_PORT', 9630))
+        update_period = int(os.environ.get('NFTABLES_EXPORTER_UPDATE_PERIOD', 60))
     except ValueError:
-        raise RuntimeError("At least one of the environment variables ADDRESS, PORT or UPDATE_PERIOD are set to an invalid value.")
+        raise RuntimeError('one of the environment variables NFTABLES_EXPORTER_ADDRESS, NFTABLES_EXPORTER_PORT or NFTABLES_EXPORTER_UPDATE_PERIOD are set to an invalid value')
 
     namespace = 'nftables'
 
@@ -73,6 +73,7 @@ def main():
     )
 
     prometheus_client.start_http_server(addr=address, port=port)
+    print(f'listing on {address}:{port} ...')
 
     while True:
         rules_gauge.set(len(fetch_nftables('ruleset', 'rule')))

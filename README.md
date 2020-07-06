@@ -7,14 +7,14 @@ A Prometheus Exporter that exposes metrics from [Nftables](https://nftables.org/
 Just start the docker container.
 The container needs the `CAP_NET_ADMIN` capability and must be part of the host network namespace in order to get data from Nftables.
 
-~~~ sh
+~~~ bash
 docker run -d --cap-add net_admin --network host dadevel/prometheus-nftables-exporter
 ~~~
 
 And test it.
 
-~~~ sh
-curl http://localhost:9876/metrics
+~~~ bash
+curl http://localhost:9630/metrics
 ~~~
 
 ## Metrics
@@ -40,7 +40,7 @@ table ip filter {
 
 Resulting metrics:
 
-~~~ prom
+~~~
 nftables_counter_bytes{family="ip", name="http-allowed", table="filter"} 90576
 nftables_counter_packets{family="ip", name="http-allowed", table="filter"} 783
 nftables_counter_bytes{family="ip", name="http-denied", table="filter"} 936
