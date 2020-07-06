@@ -3,7 +3,6 @@ import json
 import os
 import prometheus_client
 import subprocess
-import sys
 import time
 
 
@@ -20,7 +19,7 @@ class DictGauge(prometheus_client.Gauge):
         return super().labels(**filtered_data)
 
 
-def main(args):
+def main():
     try:
         address = str(os.environ.get('ADDRESS', ''))
         port = int(os.environ.get('PORT', '9876'))
@@ -29,7 +28,6 @@ def main(args):
         raise RuntimeError("At least one of the environment variables ADDRESS, PORT or UPDATE_PERIOD are set to an invalid value.")
 
     namespace = 'nftables'
-    labels = {'family', 'table', 'name', 'type'}
 
     chains_gauge = DictGauge(
         'chains',
@@ -44,33 +42,33 @@ def main(args):
     counter_bytes_gauge = DictGauge(
         'counter_bytes',
         'Byte value of named nftables counters',
-        labelnames=labels,
+        labelnames=('family', 'table', 'name'),
         namespace=namespace,
         unit='bytes'
     )
     counter_packets_gauge = DictGauge(
         'counter_packets',
         'Packet value of named nftables counters',
-        labelnames=labels,
+        labelnames=('family', 'table', 'name'),
         namespace=namespace,
         unit='packets'
     )
     map_elements_gauge = DictGauge(
         'map_elements',
         'Element count of named nftables maps',
-        labelnames=labels,
+        labelnames=('family', 'table', 'name', 'type'),
         namespace=namespace,
     )
     meter_elements_gauge = DictGauge(
         'meter_elements',
         'Element count of named nftables meters',
-        labelnames=labels,
+        labelnames=('family', 'table', 'name', 'type'),
         namespace=namespace,
     )
     set_elements_gauge = DictGauge(
         'set_elements',
         'Element count of named nftables sets',
-        labelnames=labels,
+        labelnames=('family', 'table', 'name', 'type'),
         namespace=namespace,
     )
 
@@ -91,7 +89,7 @@ def main(args):
         time.sleep(update_period)
 
 
-def fetch_nftables(query_name: str, type_name: str) -> list:
+def fetch_nftables(query_name, type_name):
     process = subprocess.run(
         ['nft', '--json', 'list', query_name],
         capture_output=True,
@@ -101,7 +99,7 @@ def fetch_nftables(query_name: str, type_name: str) -> list:
     data = json.loads(process.stdout)
     version = data['nftables'][0]['metainfo']['json_schema_version']
     if version != 1:
-        raise RuntimeError(f'json schema v{version} is not supported')
+        raise RuntimeError(f'nftables json schema v{version} is not supported')
     return [
         item[type_name]
         for item in data['nftables'][1:]
@@ -110,12 +108,5 @@ def fetch_nftables(query_name: str, type_name: str) -> list:
 
 
 if __name__ == '__main__':
-    try:
-        main(sys.argv[1:])
-        sys.exit(0)
-    except KeyboardInterrupt:
-        sys.exit(1)
-    except Exception as e:
-        print(e, file=sys.stderr)
-        sys.exit(1)
+    main()
 
