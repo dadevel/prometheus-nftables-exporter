@@ -17,9 +17,17 @@ And test it.
 curl http://localhost:9630/metrics
 ~~~
 
-## Metrics
+## Configure
 
-Example Nftables ruleset:
+| Environment variable              | Description                                                    |
+|-----------------------------------|----------------------------------------------------------------|
+| `NFTABLES_EXPORTER_ADDRESS`       | listen address, listening on all network interfaces by default |
+| `NFTABLES_EXPORTER_PORT`          | listen port, defaults to `9639`                                |
+| `NFTABLES_EXPORTER_UPDATE_PERIOD` | update interval in seconds, defaults to `60`                   |
+
+## Example
+
+Nftables ruleset:
 
 ~~~ nft
 table ip filter {
