@@ -1,14 +1,14 @@
 # Prometheus Nftables Exporter [![CI](https://github.com/dadevel/prometheus-nftables-exporter/workflows/CI/badge.svg?branch=master)](https://github.com/dadevel/prometheus-nftables-exporter/actions) [![Docker Image Version (latest by date)](https://img.shields.io/docker/v/dadevel/prometheus-nftables-exporter?color=blue&logo=docker)](https://hub.docker.com/r/dadevel/prometheus-nftables-exporter)
 
-A Prometheus Exporter that exposes metrics from [Nftables](https://nftables.org/projects/nftables/index.html).
+A Prometheus Exporter that exposes metrics from [nftables](https://nftables.org/projects/nftables/index.html).
 
 ## Setup
 
 Just start the docker container.
-The container needs the `CAP_NET_ADMIN` capability and must be part of the host network namespace in order to get data from Nftables.
+The container needs the `net_admin` capability and must be part of the host network namespace in order to collect data from nftables.
 
 ~~~ bash
-docker run -d --cap-add net_admin --network host dadevel/prometheus-nftables-exporter
+docker run -d --cap-drop all --cap-add net_admin --security-opt no-new-privileges --network host dadevel/prometheus-nftables-exporter
 ~~~
 
 And test it.
@@ -27,7 +27,7 @@ curl http://localhost:9630/metrics
 
 ## Example
 
-Nftables ruleset:
+Firewall ruleset:
 
 ~~~ nft
 table ip filter {
@@ -48,7 +48,7 @@ table ip filter {
 
 Resulting metrics:
 
-~~~
+~~~ prom
 nftables_counter_bytes{family="ip", name="http-allowed", table="filter"} 90576
 nftables_counter_packets{family="ip", name="http-allowed", table="filter"} 783
 nftables_counter_bytes{family="ip", name="http-denied", table="filter"} 936
@@ -58,7 +58,7 @@ nftables_meter_elements{family="ip", name="http-limit", table="filter", type="ip
 
 ## Build
 
-~~~ sh
+~~~ bash
 docker build -t dadevel/prometheus-nftables-exporter .
 ~~~
 
