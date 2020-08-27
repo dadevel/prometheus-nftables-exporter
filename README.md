@@ -2,6 +2,8 @@
 
 A Prometheus Exporter that exposes metrics from [nftables](https://nftables.org/projects/nftables/index.html).
 
+![Example Grafana Dashboard Screenshot](./images/grafana.png)
+
 ## Setup
 
 Just start the docker container.
