@@ -157,7 +157,11 @@ def annotate_elements_with_country(item, geoip_db):
 def lookup_ip_country(address, database):
     """Returns the country code for a given ip address."""
     info = database.get(address)
-    return '' if info is None else info['country']['iso_code']
+    try:
+        return info['country']['iso_code']
+    except Exception:
+        logging.warning(f'location lookup for {address} failed, database returned {info}')
+        return ''
 
 
 def retry(n=2, exceptions=Exception):
