@@ -103,12 +103,15 @@ def collect_metrics(chains, rules, counter_bytes, counter_packets, map_elements,
         for item in fetch_nftables('counters', 'counter'):
             counter_bytes.labels(item).set(item.get('bytes', 0))
             counter_packets.labels(item).set(item.get('packets', 0))
+        map_elements.reset()
         for item in fetch_nftables('maps', 'map'):
             for labels, value in annotate_elements_with_country(item, geoip_db):
                 map_elements.labels(labels).set(value)
+        meter_elements.reset()
         for item in fetch_nftables('meters', 'meter'):
             for labels, value in annotate_elements_with_country(item, geoip_db):
                 meter_elements.labels(labels).set(value)
+        set_elements.reset()
         for item in fetch_nftables('sets', 'set'):
             for labels, value in annotate_elements_with_country(item, geoip_db):
                 set_elements.labels(labels).set(value)
@@ -262,6 +265,12 @@ class DictGauge(prometheus_client.Gauge):
             if key in self._labelnames
         }
         return super().labels(**filtered_data)
+
+    def reset(self):
+        # collect() always returns a list with one element
+        metric = self.collect()[0]
+        for sample in metric.samples:
+            self.labels(sample.labels).set(0)
 
 
 if __name__ == '__main__':
