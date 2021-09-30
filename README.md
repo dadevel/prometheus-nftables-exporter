@@ -10,7 +10,7 @@ Just start the docker container.
 It requires the `net_admin` capability and must be part of the host network namespace in order to collect data from nftables.
 
 ~~~ bash
-docker run -d -p 9639 --cap-drop all --cap-add net_admin --network host dadevel/prometheus-nftables-exporter
+docker run -d -p 9639 --cap-drop all --cap-add net_admin --network host ghcr.io/dadevel/nftables-exporter
 ~~~
 
 And test it.
@@ -25,7 +25,7 @@ Unfortunately you have provide a (free) MaxMind license key.
 See [here](https://dev.maxmind.com/geoip/geoip2/geolite2/) for more information.
 
 ~~~ bash
-docker run -d -p 9639 --cap-drop all --cap-add net_admin --network host -e MAXMIND_LICENSE_KEY=INSERT_YOUR_KEY_HERE dadevel/prometheus-nftables-exporter
+docker run -d -p 9639 --cap-drop all --cap-add net_admin --network host -e MAXMIND_LICENSE_KEY=INSERT_YOUR_KEY_HERE ghcr.io/dadevel/nftables-exporter
 ~~~
 
 ## Configure
@@ -77,7 +77,11 @@ nftables_meter_elements{family="ip6", name="http6-limit", table="filter", type="
 
 ## Build
 
+Install the dependencies and run the python script.
+
 ~~~ bash
-DOCKER_BUILDKIT=1 docker build -t dadevel/prometheus-nftables-exporter .
+pip3 install -r ./requirements.txt
+python3 ./main.py
 ~~~
 
+The `Dockerfile` is available under [github.com/dadevel/dockerfiles](https://github.com/dadevel/dockerfiles/tree/main/nftables-exporter).
