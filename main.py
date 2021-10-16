@@ -58,14 +58,14 @@ def get_prometheus_metrics():
             'Number of rules in nftables ruleset',
             namespace=NAMESPACE,
         ),
-        DictGauge(
+        DictCounter(
             'counter_bytes',
             'Byte value of named nftables counters',
             labelnames=('family', 'table', 'name'),
             namespace=NAMESPACE,
             unit='bytes'
         ),
-        DictGauge(
+        DictCounter(
             'counter_packets',
             'Packet value of named nftables counters',
             labelnames=('family', 'table', 'name'),
@@ -163,7 +163,6 @@ def lookup_ip_country(address, database):
     try:
         return info['country']['iso_code']
     except Exception:
-        logging.warning(f'location lookup for {address} failed, database returned {info}')
         return ''
 
 
@@ -252,12 +251,30 @@ def last(iterable):
         return result
 
 
+def _filter_labels(data, labelnames):
+    return {
+        key: value
+        for key, value in data.items()
+        if key in labelnames
+    }
+
+
+def _reset_labels(self):
+    for metric in self.collect():
+        for sample in metric.samples:
+            self.labels(sample.labels).set(0)
+
+
 class DictGauge(prometheus_client.Gauge):
     """Subclass of prometheus_client.Gauge with automatic label filtering."""
+    def labels(self, data):
+        return super().labels(**_filter_labels(data, self._labelnames))
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def reset(self):
+        _reset_labels(self)
 
+
+class DictCounter(prometheus_client.Counter):
     def labels(self, data):
         filtered_data = {
             key: value
@@ -266,13 +283,12 @@ class DictGauge(prometheus_client.Gauge):
         }
         return super().labels(**filtered_data)
 
+    def set(self, data):
+        self._value.set(data)
+
     def reset(self):
-        # collect() always returns a list with one element
-        metric = self.collect()[0]
-        for sample in metric.samples:
-            self.labels(sample.labels).set(0)
+        _reset_labels(self)
 
 
 if __name__ == '__main__':
     main()
-

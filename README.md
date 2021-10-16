@@ -65,15 +65,17 @@ table inet filter {
 Resulting metrics:
 
 ~~~ prom
-nftables_counter_bytes{family="inet", name="http-allowed", table="filter"} 90576
-nftables_counter_packets{family="inet", name="http-allowed", table="filter"} 783
-nftables_counter_bytes{family="inet", name="http-denied", table="filter"} 936
-nftables_counter_packets{family="inet", name="http-denied", table="filter"} 13
+nftables_counter_bytes_total{family="inet", name="http-allowed", table="filter"} 90576
+nftables_counter_packets_total{family="inet", name="http-allowed", table="filter"} 783
+nftables_counter_bytes_total{family="inet", name="http-denied", table="filter"} 936
+nftables_counter_packets_total{family="inet", name="http-denied", table="filter"} 13
 nftables_meter_elements{family="ip", name="http-limit", table="filter", type="ipv4_addr", country="US"} 7
 nftables_meter_elements{family="ip", name="http-limit", table="filter", type="ipv4_addr", country="DE"} 3
 nftables_meter_elements{family="ip", name="http-limit", table="filter", type="ipv4_addr", country=""} 2
 nftables_meter_elements{family="ip6", name="http6-limit", table="filter", type="ipv6_addr", country="US"} 2
 ~~~
+
+**Notice:** Since v2.0.0 `nftables_counter_bytes` and `nftables_counter_packets` are proper Prometheus counters and therefore got a `_total` suffix.
 
 ## Build
 
