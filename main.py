@@ -146,11 +146,12 @@ def annotate_elements_with_country(item, geoip_db):
         for element in elements:
             if isinstance(element, str):
                 country = lookup_ip_country(element, geoip_db)
+                result[country] += 1
             elif isinstance(element, dict):
                 country = lookup_ip_country(element['elem']['val'], geoip_db)
+                result[country] += 1
             else:
-                raise TypeError(f'got element of unexpected type {element.__class__.__name__}')
-            result[country] += 1
+                log.debug(f'got element of unexpected type {element.__class__.__name__} with {item=}')
         for country, value in result.items():
             yield dict(item, country=country), value
     else:
